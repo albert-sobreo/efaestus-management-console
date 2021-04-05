@@ -1,0 +1,171 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap');
+
+body{
+    font-family: 'Poppins', sans-serif !important;
+    font-size: 0.75rem;
+    background-color: #222A2E;
+}
+
+.mybg-blue-100{
+    background-color: #222A2E;
+    background: #222A2E
+}
+
+.mybg-blue-200{
+    background-color: #2A3B43;
+}
+
+.mybg-blue-250{
+    background-color: #384d57;
+}
+
+.mybg-blue-300{
+    background-color: #4A5D66;
+}
+
+.mybg-blue-400{
+    background-color: #B9CCD6;
+}
+
+.mytext-blue-100{
+    color: #B9CCD6;
+}
+
+.button-primary{
+    background-color: #2991C2;
+    color: #B9CCD6;
+}
+
+.hyperlink{
+    color: #0DA4EC;
+}
+
+.message:empty{
+    display: none;
+}
+
+.sidebar{
+    height: 100%;
+    width: 195px;
+    position: fixed;
+    z-index: 1;
+    top: 0;
+    left: 0;
+    overflow: hidden;
+}
+
+.sidebar-logo{
+    width: 100%;
+}
+
+.sidebar-body a:hover{
+    color: white;
+}
+
+.active{
+    color: white !important;
+}
+
+.main{
+    margin-left: 195px;
+}
+
+.navbar{
+    height: 40px;
+}
+
+.dropdown{
+    display: inline-block;
+    position: relative;
+}
+
+.dropdown-content{
+    display: none;
+    position: absolute;
+    align-items: flex-start;
+}
+
+.dropdown:hover .dropdown-content{
+    display: flex;
+}
+
+.dropdown-content a:hover{
+    color: #0DA4EC;
+}
+
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 20; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+  }
+  
+  /* Modal Content/Box */
+  
+  /* The Close Button */
+  .close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+  }
+  
+  .close:hover,
+  .close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+/* Modal Header */
+.modal-header {
+  padding: 2px 16px;
+  background-color: #5cb85c;
+  color: white;
+}
+
+/* Modal Body */
+
+/* Modal Footer */
+.modal-footer {
+  padding: 2px 16px;
+  background-color: #5cb85c;
+  color: white;
+}
+
+/* Modal Content */
+.modal-content {
+  position: relative;
+  margin: 2% auto;
+  width: 40%;
+  animation-name: animatetop;
+  animation-duration: 0.4s
+}
+
+/* Add Animation */
+@keyframes animatetop {
+  from {top: -300px; opacity: 0}
+  to {top: 0; opacity: 1}
+}
+
+[v-cloak] {
+  display: none;
+}
+
+.list{
+    transition: 50ms ease-in-out;
+}
+
+.list:hover{
+    background-color: #223036;
+}
+
+a{
+    cursor: pointer;
+}

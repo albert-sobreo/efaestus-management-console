@@ -1,0 +1,399 @@
+{%extends "template.html"%}
+
+{% block title %}Home{% endblock %}
+
+{% block body %}
+
+<div id="sidebar-component">
+    <sidebar active="home"></sidebar>
+</div>
+
+<div class="main text-white" id="app" v-cloak>
+    <pre>[[ $data ]]</pre>
+    
+    <div class="navbar shadow-lg flex justify-between items-center px-10">
+        <span class="flex font-bold text-lg">Home</span>
+        <div class="text-sm font-bold dropdown">
+            <span class="rounded-full py-1 px-5 mybg-blue-250">{{user.first_name}} {{user.last_name}}</span>
+            <div class="dropdown-content flex-col mybg-blue-200 py-5 px-5 shadow-lg rounded-md w-40 right-0 font-normal">
+                <a href="/logout/" class="py-1">Logout</a>
+            </div>
+        </div>
+    </div>
+    <div class="main-body flex py-5 px-16 font-bold text-sm text-white">
+        <!-- LEFT SIDE -->
+        <div class="main-body-left flex-col flex mr-10 flex-1">
+            <div class="home-works-container flex-1 my-5">
+                <div class="home-works-name">
+                    Works
+                </div>
+                <div class="home-works-main mt-5 rounded-2xl relative mybg-blue-200 py-5">
+                    <div class="add-button">
+                        <button id="add-works" data-target="workModal" data-submit="sendWork" onclick="openModal(this.id)" class="absolute duration-100 ease-in-out top-3 right-3 bg-yellow-400 text-black font-bold text-lg h-5 w-5 rounded-full flex justify-center items-center focus:outline-none hover:bg-opacity-75"><i class="fas fa-plus text-sm"></i></button>
+                    </div>
+                    <div class="list flex flex-row justify-between py-5 px-7" v-for="work in workList">
+                        <!-- IF ELSE BLOCK -->
+                        <div class="list-status px-1 mr-2 self-center" v-if="work.status === 'In-Progress'">
+                            <i class="fas fa-circle text-purple-400" style="font-size: 8px;"></i>
+                        </div>
+                        <div class="list-status px-1 mr-2 self-center" v-else-if="work.status === 'To-Do'">
+                            <i class="fas fa-circle text-blue-400" style="font-size: 8px;"></i>
+                        </div>
+                        <div class="list-status px-1 mr-2 self-center" v-else-if="work.status === 'Cancelled'">
+                            <i class="fas fa-circle text-red-600" style="font-size: 8px;"></i>
+                        </div>
+                        <div class="list-status px-1 mr-2 self-center" v-else-if="work.status === 'Completed'">
+                            <i class="fas fa-circle text-green-500" style="font-size: 8px;"></i>
+                        </div>
+                        <!-- END IF ELSE BLOCK -->
+                        <div class="flex list-start w-1/3 flex-col">
+                            <span>[[work.title]]</span>
+                            <span class="mytext-blue-100">DL: [[work.deadline]]</span>
+                        </div>
+                        <div class="flex list-center w-1/3 flex-col">
+                            <span>Start: [[work.start_date]]</span>
+                            <span>End: [[work.end_date]]</span>
+                        </div>
+                        <div class="flex list-end w-1/3 flex-col">
+                            <span>Assignees</span>
+                            <div class="flex flex-row">
+                                <span v-for="assignee in work.assignees">[[assignee.username]] &nbsp; </span>
+                            </div>
+                        </div>
+                        <div class="list-ellipsis dropdown px-2 self-center">
+                            <i class="fas fa-ellipsis-v"></i>
+                            <div class="dropdown-content flex flex-col mybg-blue-300 py-4 px-4 shadow-lg rounded-md w-32 -ml-10 font-normal z-10">
+                                <a class="my-1" @click="updateWork(work.id, 'To-Do')">To-Do</a>
+                                <a class="my-1" @click="updateWork(work.id, 'In-Progress')">In-Progress</a>
+                                <a class="my-1" @click="updateWork(work.id, 'Cancelled')">Cancelled</a>
+                                <a class="my-1" @click="updateWork(work.id, 'Completed')">Completed</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="home-bugs-container flex-1 my-5">
+                <div class="home-bugs-name">
+                    Bugs
+                </div>
+                <div class="home-bugs-main mt-5 rounded-2xl relative mybg-blue-200 py-5">
+                    <div class="add-button">
+                        <button id="myBtn" onClick="openModal(this.id)" data-target="bugModal" data-submit="sendBug" class="absolute duration-100 ease-in-out top-3 right-3 bg-yellow-400 text-black font-bold text-lg h-5 w-5 rounded-full flex justify-center items-center focus:outline-none hover:bg-opacity-75 outline-none"><i class="fas fa-plus text-sm"></i></button>
+                    </div>
+                    <div class="list flex flex-row justify-between py-5 px-7" v-for="bug in bugList">
+                        <!-- IF ELSE BLOCK -->
+                        <div class="list-status px-1 mr-2 self-center" v-if="bug.status === 'Unresolved'">
+                            <i class="fas fa-circle text-yellow-600" style="font-size: 8px;"></i>
+                        </div>
+                        <div class="list-status px-1 mr-2 self-center" v-else-if="bug.status === 'Resolved'">
+                            <i class="fas fa-circle text-green-500" style="font-size: 8px;"></i>
+                        </div>
+                        <!-- END IF ELSE BLOCK -->
+                        <div class="flex list-start w-1/3 flex-col pr-1">
+                            <span>[[bug.issue_no]]</span>
+                            <span class="mytext-blue-100">[[bug.title]]</span>
+                        </div>
+                        <div class="flex list-center w-1/3 flex-col pr-1">
+                            <span>Date Found</span>
+                            <span class="mytext-blue-100">[[bug.date_created]]</span>
+                        </div>
+                        <div class="flex list-end w-1/3 flex-col pr-1">
+                            <span>Discovered By</span>
+                            <span class="mytext-blue-100">[[bug.discovered_by.username]]</span>
+                        </div>
+                        <div class="list-ellipsis dropdown px-2 self-center">
+                            <i class="fas fa-ellipsis-v"></i>
+                            <div class="dropdown-content flex flex-col mybg-blue-250 py-4 px-4 shadow-lg rounded-md w-32 -ml-10 font-normal z-10">
+                                <a class="my-1" @click="updateBug(bug.id, 'Unresolved')">Unresolved</a>
+                                <a class="my-1" @click="updateBug(bug.id, 'Resolved')">Resolved</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- RIGHT SIDE -->
+        <div class="main-body-right flex ml-10 flex-1">
+            <div class="home-memo-container flex-1 my-5">
+                <div class="home-memo-name">
+                    Company Memo
+                </div>
+                <div class="home-memo-main flex my-5 rounded-2xl relative mybg-blue-200 py-5 px-7 justify-center items-center">
+                    Coming Soon
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODALS -->
+    <!-- BUGS -->
+    <div id="bugModal" class="modal text-base text-black">
+
+        <!-- Modal content -->
+        <div class="modal-content px-10 py-7 mybg-blue-200 mytext-blue-100 shadow-2xl rounded-xl font-bold">
+          <div class="modal-body">
+            <span class="close"></span>
+            <div class="modal-name">
+                <span class="text-2xl">Bugs</span>
+            </div>
+            <div class="modal-main py-5">
+                <div>
+                    <div class="flex flex-col issue">
+                        <label for="issue_no">Issue No.</label>
+                        <input v-model="bugModal.issue_no" type="text" name="issue_no" class="px-3 py-1 my-2 rounded-md mybg-blue-300 mytext-blue-100 " autocomplete="off">
+                    </div>
+                    <div class="flex flex-col title">
+                        <label for="title">Title</label>
+                        <input v-model="bugModal.title" type="text" name="title" class="px-3 py-1 my-2 rounded-md mybg-blue-300 mytext-blue-100 ">
+                    </div>
+                    <div class="flex flex-col date-created">
+                        <label for="date_created">Date Created</label>
+                        <input v-model="bugModal.date_created" type="date" name="date_created" class="px-3 py-1 my-2 rounded-md mybg-blue-300 mytext-blue-100 ">
+                    </div>
+                    <div class="flex flex-col feature">
+                        <label for="feature">Affected Feature</label>
+                        <input v-model="bugModal.feature" type="text" name="feature" class="px-3 py-1 my-2 rounded-md mybg-blue-300 mytext-blue-100 ">
+                    </div>
+                    <div class="flex flex-col steps">
+                        <label for="steps">Steps to Reproduce</label>
+                        <textarea v-model="bugModal.steps" name="steps" id="" rows="5" class="px-3 py-1 my-2 rounded-md mybg-blue-300 mytext-blue-100 "></textarea>
+                    </div>
+                    <div class="flex flex-col expected">
+                        <label for="expected">Expected Results</label>
+                        <textarea v-model="bugModal.expected" name="expected" id="" rows="2" class="px-3 py-1 my-2 rounded-md mybg-blue-300 mytext-blue-100 "></textarea>
+                    </div>
+                    <div class="flex flex-col actual">
+                        <label for="actual">Actual Results</label>
+                        <textarea v-model="bugModal.actual" name="actual" id="" rows="2" class="px-3 py-1 my-2 rounded-md mybg-blue-300 mytext-blue-100 "></textarea>
+                    </div>
+                    <div class="flex flex-col discovered_by">
+                        <label for="discovered_by">Discovered By</label>
+                        <select v-model="bugModal.discovered_by" name="discovered_by" class="px-3 py-1 my-2 rounded-md mybg-blue-300 mytext-blue-100 ">
+                            <option v-for="user in users" :value="user.id">[[user.username]]</option>
+                        </select>
+
+                    </div>
+                    <div class="flex flex-col send">
+                        <button id="sendBug" type="button" @click="submitBug()" class="my-5 duration-100 ease-in-out button-primary outline-none py-1 px-3 text-black rounded-md font-bold text-sm flex justify-center items-center outline-none focus:outline-none hover:bg-opacity-75">Send Report</button>
+                    </div>
+                </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- WORKS -->
+    <div id="workModal" class="modal text-base text-black">
+
+        <!-- Modal content -->
+        <div class="modal-content px-10 py-7 mybg-blue-200 mytext-blue-100 shadow-2xl rounded-xl font-bold">
+          <div class="modal-body">
+            <span class="close"></span>
+            <div class="modal-name">
+                <span class="text-2xl">Work</span>
+            </div>
+            <div class="modal-main py-5">
+                <div>
+                    <div class="flex flex-col title">
+                        <label for="title">Title</label>
+                        <input v-model="workModal.title" type="text" name="title" class="px-3 py-1 my-2 rounded-md mybg-blue-300 mytext-blue-100 " autocomplete="off">
+                    </div>
+                    <div class="flex flex-col start_date">
+                        <label for="start_date">Start Date</label>
+                        <input v-model="workModal.start_date" type="date" name="start_date" class="px-3 py-1 my-2 rounded-md mybg-blue-300 mytext-blue-100 ">
+                    </div>
+                    <div class="flex flex-col deadline">
+                        <label for="deadline">Deadline</label>
+                        <input v-model="workModal.deadline" type="date" name="deadline" class="px-3 py-1 my-2 rounded-md mybg-blue-300 mytext-blue-100 ">
+                    </div>
+                    <div class="flex flex-col status">
+                        <label for="status">Status</label>
+                        <select v-model="workModal.status" name="status" id="" class="px-3 py-1 my-2 rounded-md mybg-blue-300 mytext-blue-100 ">
+                            <option value="" disabled selected>Select Status</option>
+                            <option value="To-Do">To-Do</option>
+                            <option value="In-Progress">In-Progress</option>
+                            <option value="Completed">Completed</option>
+                            <option value="Cancelled">Cancelled</option>
+                        </select>
+                    </div>
+                    <div class="flex flex-col assignees">
+                        <label for="assignees">Assignees</label>
+                        <select v-model="workModal.assignees" name="assignees" id="" class=" px-3 py-1 my-2 rounded-md mybg-blue-300 mytext-blue-100 focus:outline:none overflow-hidden" multiple="true">
+                            <option v-for="user in users" :value="user.id">[[user.first_name]] [[user.last_name]]</option>
+                        </select>
+                    </div>
+                    <div class="flex flex-col description">
+                        <label for="description">Description</label>
+                        <textarea v-model="workModal.description" name="description" id="" rows="5" class="px-3 py-1 my-2 rounded-md mybg-blue-300 mytext-blue-100"></textarea>
+                    </div>
+                    <div class="flex flex-col send">
+                        <button id="sendWork" type="button" @click="submitWork()" class="my-5 duration-100 ease-in-out button-primary outline-none py-1 px-3 text-black rounded-md font-bold text-sm flex justify-center items-center outline-none focus:outline-none hover:bg-opacity-75">Send Report</button>
+                    </div>
+                </div>
+            </div>
+          </div>
+        </div>
+      </div>
+</div>
+
+{% endblock %}
+
+{% block script %}
+
+<script>
+    new Vue({
+        el: "#sidebar-component"
+    })
+</script>
+
+<script>
+    function openModal(id){
+        var btn = document.getElementById(id)
+        var modal = document.getElementById(btn.dataset.target)
+        var sendButton = document.getElementById(btn.dataset.submit)
+
+        var span = document.getElementsByClassName("close")[0];
+
+        // When the user clicks on the button, open the modal
+        modal.style.display = "block";
+
+        // When the user clicks on <span> (x), close the modal
+        span.onclick = function() {
+            modal.style.display = "none";
+        }
+
+        sendButton.onclick = function(){
+            modal.style.display = "none"
+        }
+
+        // When the user clicks anywhere outside of the modal, close it
+        window.onclick = function(event) {
+            if (event.target == modal) {
+              modal.style.display = "none";
+            }        
+        }
+    }
+    $(document).ready(function() {
+        $('.select2').select2();
+    });
+</script>
+
+<script>
+    var app = new Vue({
+        delimiters: ['[[', ']]'],
+        el: "#app",
+
+        data: {
+            config: {
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken')
+                }
+            },
+
+            me: {
+                id: "{{user.pk}}",
+                username: "{{user.username}}",
+                first_name: "{{user.first_name}}",
+                last_name: "{{user.last_name}}",
+                mobile: null,
+                email: ""
+            },
+
+            workList: [],
+
+            bugList: [],
+
+            workModal: {
+                title: null,
+                start_date: null,
+                deadline: null,
+                status: null,
+                assignees: [],
+                description: null,
+            },
+
+            bugModal: {
+                issue_no: null,
+                title: null,
+                date_created: null,
+                feature: null,
+                steps: null,
+                expected: null,
+                actual: null,
+                discovered_by: null,
+                status: "Unresolved"
+            },
+            users: [],
+
+            updateWorkSet: {},
+            updateBugSet: {},
+        },
+
+        methods: {
+            workModalInitial(){
+                return {
+                    title: null,
+                    start_date: null,
+                    deadline: null,
+                    status: null,
+                    assignees: [],
+                    description: null,
+                }
+            },
+
+            bugModalInitial(){
+                return {
+                    issue_no: null,
+                    title: null,
+                    date_created: null,
+                    feature: null,
+                    steps: null,
+                    expected: null,
+                    actual: null,
+                    discovered_by: this.me.id,
+                    status: "Unresolved"
+                }
+            },
+
+            loadData(){
+                axios.get('/api/nested-work/').then(res=>this.workList=res.data)
+                axios.get('/api/nested-bug/').then(res=>this.bugList=res.data)
+                axios.get('/api/user/').then(res=>this.users=res.data)
+            },
+
+            submitWork(){
+                axios.post('/api/work/', this.workModal, this.config).then(res=>this.loadData())
+                this.workModal = this.workModalInitial()
+            },
+
+            submitBug(){
+                axios.post('api/bug/', this.bugModal, this.config).then(res=>this.loadData())
+                this.bugModal = this.bugModalInitial()
+            },
+
+            updateWork(id, status){
+                var arr = []
+                this.updateWorkSet = this.workList.find(work=>work.id === id)
+                this.updateWorkSet.assignees.forEach(item=>arr.push(item.id))
+                this.updateWorkSet.assignees = arr
+                this.updateWorkSet.status = status
+                axios.put(`/api/work/${id}/`, this.updateWorkSet, this.config).then(res=>this.loadData())
+                
+            },
+
+            updateBug(id, status){
+                this.updateBugSet = this.bugList.find(bug=>bug.id === id)
+                this.updateBugSet.discovered_by = this.updateBugSet.discovered_by.id
+                this.updateBugSet.status = status
+                axios.put(`/api/bug/${id}/`, this.updateBugSet, this.config).then(res=>this.loadData())
+
+            }
+        },
+
+        mounted(){
+            this.loadData()
+        }
+    })
+</script>
+
+{% endblock %}
